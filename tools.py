@@ -46,8 +46,10 @@ import pdfplumber
 BASE_URL = "https://www.dokumentation.landtag-mv.de/parldok"
 USER_AGENT = "Mozilla/5.0 (compatible; LandtagMV-MCP/1.0; parliamentary research)"
 
-MAX_TEXT_CHARS = 20_000
-MAX_RESPONSE_CHARS = 24_000
+# Safety cap: ~100K chars ≈ 25K tokens — leaves ample room in a 200K-token context window.
+# Virtually no parliamentary document exceeds this; only extreme Plenarprotokolle might.
+MAX_TEXT_CHARS = 100_000
+MAX_RESPONSE_CHARS = 105_000
 REQUEST_DELAY = 0.5  # seconds between requests
 
 # Document type mapping for the tag system (type 7)
@@ -391,8 +393,9 @@ async def get_document_text(
     Lädt das PDF herunter und extrahiert den Text mit pdfplumber.
     Ergebnisse werden gecacht — PDFs ändern sich nicht nach Veröffentlichung.
 
-    Der Text wird auf max. 20.000 Zeichen begrenzt. Bei längeren Dokumenten
-    wird der PDF-Link für den vollständigen Text bereitgestellt.
+    Der vollständige Text wird zurückgegeben (bis zu 100.000 Zeichen — entspricht
+    ca. 25.000 Tokens, sicher innerhalb eines 200K-Token-Kontextfensters).
+    Nur sehr lange Plenarprotokolle können dieses Limit überschreiten.
 
     Args:
         document_id: Numerische Dokument-ID (z. B. "68623") — aus search_documents oder get_document_by_number
