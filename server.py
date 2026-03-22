@@ -1,4 +1,5 @@
 from fastmcp import FastMCP
+from mcp.server.fastmcp import Icon
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 
@@ -11,6 +12,10 @@ from tools import (
 )
 
 ####### SERVER #######
+
+icon = Icon(
+    src="https://raw.githubusercontent.com/SimonBerg255/landtag-mv-mcp/main/icon.png",
+)
 
 INSTRUCTION_STRING = """
 Server für parlamentarische Recherche im Landtag Mecklenburg-Vorpommern.
@@ -55,6 +60,7 @@ mcp = FastMCP(
     instructions=INSTRUCTION_STRING,
     version="1.0.0",
     website_url="https://www.dokumentation.landtag-mv.de/parldok",
+    icons=[icon],
 )
 
 ####### TOOLS #######
